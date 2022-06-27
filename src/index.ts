@@ -1,4 +1,4 @@
-import {Db, MongoClient, Document} from "mongodb"
+import {Db, MongoClient, Document, Collection} from "mongodb"
 
 interface DatabaseConfigType {
     cluster: string,
@@ -6,53 +6,60 @@ interface DatabaseConfigType {
     password: string
 }
 
-export default class MongodbClient {
+export class database {
     url: string
-    client: MongoClient
-    database: Db
+    MongoDatabase: Db
+    MongodbClient: MongoClient
 
     constructor(DatabaseName, DatabaseConfig:DatabaseConfigType){  
         this.url = `mongodb+srv://${DatabaseConfig.username}:${encodeURIComponent(DatabaseConfig.password)}@${DatabaseConfig.cluster}.ycebo.mongodb.net?retryWrites=true&w=majority`
-        this.client =  new MongoClient(this.url)
-        this.database = this.client.db(DatabaseName)
+        this.MongodbClient = new MongoClient(this.url)
+        this.MongoDatabase = this.MongodbClient.db(DatabaseName)
     }
 
-    async connect(){
-        await this.client.connect()
-        return {
-            GetCollection: this.#GetCollection
-        }
+    async connect() {
+        await this.MongodbClient.connect()
+        return this
     }
-    
-    #GetCollection(CollectionName:string){  
-        const collection = this.database.collection(CollectionName)
-        return {
-            //? GET
-            GetAll: async () => {
-                return collection.find().toArray()
-            },
-            GetMultiple: async (value:Document) => {
-                return collection.find(value).toArray()
-            },
-            GetOne: async (value) => {
-                return collection.findOne(value)
-            },
+}
 
-            //? ADD
-            AddOne: async (value) => {
-                return collection.insertOne(value)
-            },
-            AddMultiple: async (value) => {
-                return collection.insertMany(value)
-            },
+export class collection {
+    name: string
+    database:database
 
-            //? DELETE
-            DeleteOne: async (value) => {
-                return collection.deleteOne(value)
-            },
-            DeleteMany: async (value) => {
-                return collection.deleteMany(value)
-            },
-        }
+    collection:Collection<Document>
+
+
+    constructor(name, database:database) {
+        this.database = database
+        this.collection = this.database.MongoDatabase.collection(name)
+    }    
+
+
+    //? GET
+    async GetAll() {
+        return this.collection.find().toArray()
+    }
+    async GetMultiple(value:Document) {
+        return this.collection.find(value).toArray()
+    }
+    async GetOne(value) {
+        return this.collection.findOne(value)
+    }
+
+    //? ADD
+    async AddOne(value) {
+        return this.collection.insertOne(value)
+    }
+    async AddMultiple(value) {
+        return this.collection.insertMany(value)
+    }
+
+    //? DELETE
+    async DeleteOne(value) {
+        return this.collection.deleteOne(value)
+    }
+    async DeleteMany(value) {
+        return this.collection.deleteMany(value)
     }
 }
