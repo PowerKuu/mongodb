@@ -1,19 +1,18 @@
-import {Db, MongoClient, Document, Collection} from "mongodb"
-
-interface DatabaseConfigType {
-    cluster: string,
-    username: string,
-    password: string
-}
+import {Db, MongoClient, Document, Collection, ServerApiVersion} from "mongodb"
 
 export class database {
-    #url: string
+    #uri: string
     MongoDatabase: Db
     MongodbClient: MongoClient
 
-    constructor(DatabaseName, DatabaseConfig:DatabaseConfigType){  
-        this.#url = `mongodb+srv://${DatabaseConfig.username}:${encodeURIComponent(DatabaseConfig.password)}@${DatabaseConfig.cluster}.ycebo.mongodb.net?retryWrites=true&w=majority`
-        this.MongodbClient = new MongoClient(this.#url)
+    constructor(DatabaseName, uri: string){  
+        this.#uri = uri
+        this.MongodbClient = new MongoClient(this.#uri, {
+            useNewUrlParser: true, 
+            useUnifiedTopology: true, 
+            serverApi: ServerApiVersion.v1 
+        } as any)
+
         this.MongoDatabase = this.MongodbClient.db(DatabaseName)
     }
 
@@ -40,26 +39,26 @@ export class collection {
     async GetAll() {
         return this.collection.find().toArray()
     }
-    async GetMultiple(value:Document) {
-        return this.collection.find(value).toArray()
+    async GetMultiple(quarry:Document) {
+        return this.collection.find(quarry).toArray()
     }
-    async GetOne(value) {
-        return this.collection.findOne(value)
+    async GetOne(quarry) {
+        return this.collection.findOne(quarry)
     }
 
     //? ADD
-    async AddOne(value) {
-        return this.collection.insertOne(value)
+    async AddOne(quarry) {
+        return this.collection.insertOne(quarry)
     }
-    async AddMultiple(value) {
-        return this.collection.insertMany(value)
+    async AddMultiple(quarry) {
+        return this.collection.insertMany(quarry)
     }
 
     //? DELETE
-    async DeleteOne(value) {
-        return this.collection.deleteOne(value)
+    async DeleteOne(quarry) {
+        return this.collection.deleteOne(quarry)
     }
-    async DeleteMany(value) {
-        return this.collection.deleteMany(value)
+    async DeleteMany(quarry) {
+        return this.collection.deleteMany(quarry)
     }
 }
