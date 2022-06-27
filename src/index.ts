@@ -7,13 +7,13 @@ interface DatabaseConfigType {
 }
 
 export class database {
-    url: string
+    #url: string
     MongoDatabase: Db
     MongodbClient: MongoClient
 
     constructor(DatabaseName, DatabaseConfig:DatabaseConfigType){  
-        this.url = `mongodb+srv://${DatabaseConfig.username}:${encodeURIComponent(DatabaseConfig.password)}@${DatabaseConfig.cluster}.ycebo.mongodb.net?retryWrites=true&w=majority`
-        this.MongodbClient = new MongoClient(this.url)
+        this.#url = `mongodb+srv://${DatabaseConfig.username}:${encodeURIComponent(DatabaseConfig.password)}@${DatabaseConfig.cluster}.ycebo.mongodb.net?retryWrites=true&w=majority`
+        this.MongodbClient = new MongoClient(this.#url)
         this.MongoDatabase = this.MongodbClient.db(DatabaseName)
     }
 
