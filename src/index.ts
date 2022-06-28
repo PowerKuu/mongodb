@@ -22,6 +22,8 @@ export class database {
     }
 }
 
+
+//! Extend this class to create a custom collection
 export class collection {
     name: string
     database:database
