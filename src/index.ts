@@ -1,5 +1,6 @@
 import {Db, MongoClient, Document, Collection, ServerApiVersion} from "mongodb"
 
+
 export class database {
     #uri: string
     MongoDatabase: Db
@@ -47,11 +48,11 @@ export class collection {
     }
 
     //? ADD
-    async AddOne(quarry) {
-        return this.collection.insertOne(quarry)
+    async AddOne(document) {
+        return this.collection.insertOne(document)
     }
-    async AddMultiple(quarry) {
-        return this.collection.insertMany(quarry)
+    async AddMultiple(document) {
+        return this.collection.insertMany(document)
     }
 
     //? DELETE
